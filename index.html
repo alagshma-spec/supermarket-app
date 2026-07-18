@@ -11,9 +11,33 @@
   <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="./css/style.css" />
 
-  <!-- 🔧 أداة فحص مؤقتة للتشخيص فقط — بنشيلها بعد ما نحل المشكلة -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/eruda/3.2.3/eruda.min.js"></script>
-  <script>eruda.init();</script>
+  <!-- 🔧 تشخيص مؤقت: يفحص كل ملف لحاله ويطلع تقرير كامل -->
+  <script>
+    (async function diagnose() {
+      const files = [
+        './js/app.js',
+        './js/db.js',
+        './js/modules/auth.js',
+        './js/modules/activityLog.js',
+        './js/modules/dateUtils.js',
+        './js/modules/session.js',
+      ];
+      let report = '📋 تقرير فحص الملفات:\n\n';
+      for (const f of files) {
+        try {
+          const res = await fetch(f, { cache: 'no-store' });
+          report += (res.ok ? '✅ ' : '❌ ') + f + ' — الحالة: ' + res.status + '\n';
+        } catch (err) {
+          report += '❌ ' + f + ' — فشل تمامًا: ' + err.message + '\n';
+        }
+      }
+      alert(report);
+    })();
+
+    window.addEventListener('error', function (e) {
+      alert('خطأ عام بالصفحة: ' + e.message + '\nالملف: ' + e.filename + '\nالسطر: ' + e.lineno);
+    });
+  </script>
 </head>
 <body>
 
