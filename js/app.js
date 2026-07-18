@@ -2,11 +2,23 @@
  * app.js — نقطة الدخول الرئيسية
  * الخطوة 3: تسجيل الدخول الحقيقي + هيكل التطبيق بعد الدخول (Sidebar حسب الصلاحيات)
  */
+
+// 🔧 شبكة أمان مؤقتة: تلتقط أي خطأ بأي مكان بالكود وتوريه فورًا
+window.addEventListener('error', (e) => {
+  alert('خطأ عام: ' + e.message + ' | بالملف: ' + e.filename + ' | بالسطر: ' + e.lineno);
+});
+window.addEventListener('unhandledrejection', (e) => {
+  alert('خطأ غير ملتقط (Promise): ' + (e.reason && e.reason.message ? e.reason.message : e.reason));
+});
+alert('app.js بدأ التحميل ✅');
+
 import DB from './db.js';
 import { seedDefaultAdminIfNeeded, login, hasPermission } from './modules/auth.js';
 import { logActivity } from './modules/activityLog.js';
 import { fullStamp } from './modules/dateUtils.js';
 import { getCurrentUser, setCurrentUser, clearSession } from './modules/session.js';
+
+alert('كل الاستيرادات (imports) نجحت ✅');
 
 // كل الأقسام المتاحة بالنظام — الأقسام غير المبنية بعد تظهر بعلامة "قريبًا"
 const SECTIONS = [
