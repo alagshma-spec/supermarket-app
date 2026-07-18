@@ -8,6 +8,7 @@ const CORE_ASSETS = [
   './js/modules/auth.js',
   './js/modules/activityLog.js',
   './js/modules/dateUtils.js',
+  './js/modules/session.js',
   './manifest.json',
 ];
 
