@@ -38,6 +38,9 @@ async function init() {
   await DB.open();
   await seedDefaultAdminIfNeeded();
 
+  const allUsers = await DB.getAll('users');
+  alert('عدد المستخدمين بقاعدة البيانات: ' + allUsers.length + ' | أول مستخدم: ' + (allUsers[0] ? allUsers[0].username : 'لا يوجد'));
+
   const user = getCurrentUser();
   if (user) {
     showApp(user);
@@ -123,16 +126,24 @@ loginForm.addEventListener('submit', async (e) => {
   const username = document.getElementById('username').value.trim();
   const password = document.getElementById('password').value;
 
-  const user = await login(username, password);
-  if (!user) {
-    loginError.textContent = 'اسم المستخدم أو كلمة المرور غير صحيحة';
-    loginError.hidden = false;
-    return;
-  }
+  alert('تم الضغط على دخول. اسم المستخدم: "' + username + '"');
 
-  setCurrentUser(user);
-  currentSection = 'dashboard';
-  showApp(user);
+  try {
+    const user = await login(username, password);
+    alert('نتيجة تسجيل الدخول: ' + JSON.stringify(user));
+
+    if (!user) {
+      loginError.textContent = 'اسم المستخدم أو كلمة المرور غير صحيحة';
+      loginError.hidden = false;
+      return;
+    }
+
+    setCurrentUser(user);
+    currentSection = 'dashboard';
+    showApp(user);
+  } catch (err) {
+    alert('صار خطأ: ' + err.message);
+  }
 });
 
 logoutBtn.addEventListener('click', async () => {
