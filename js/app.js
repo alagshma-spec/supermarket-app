@@ -2,25 +2,12 @@
  * app.js — نقطة الدخول الرئيسية
  * الخطوة 3: تسجيل الدخول الحقيقي + هيكل التطبيق بعد الدخول (Sidebar حسب الصلاحيات)
  */
-
-// 🔧 شبكة أمان مؤقتة: تلتقط أي خطأ بأي مكان بالكود وتوريه فورًا
-window.addEventListener('error', (e) => {
-  alert('خطأ عام: ' + e.message + ' | بالملف: ' + e.filename + ' | بالسطر: ' + e.lineno);
-});
-window.addEventListener('unhandledrejection', (e) => {
-  alert('خطأ غير ملتقط (Promise): ' + (e.reason && e.reason.message ? e.reason.message : e.reason));
-});
-alert('app.js بدأ التحميل ✅');
-
 import DB from './db.js';
 import { seedDefaultAdminIfNeeded, login, hasPermission } from './modules/auth.js';
 import { logActivity } from './modules/activityLog.js';
 import { fullStamp } from './modules/dateUtils.js';
 import { getCurrentUser, setCurrentUser, clearSession } from './modules/session.js';
 
-alert('كل الاستيرادات (imports) نجحت ✅');
-
-// كل الأقسام المتاحة بالنظام — الأقسام غير المبنية بعد تظهر بعلامة "قريبًا"
 const SECTIONS = [
   { key: 'dashboard', label: 'لوحة التحكم', icon: '📊', ready: true },
   { key: 'pos', label: 'نقطة البيع', icon: '🧾', ready: false },
@@ -49,9 +36,6 @@ let currentSection = 'dashboard';
 async function init() {
   await DB.open();
   await seedDefaultAdminIfNeeded();
-
-  const allUsers = await DB.getAll('users');
-  alert('عدد المستخدمين بقاعدة البيانات: ' + allUsers.length + ' | أول مستخدم: ' + (allUsers[0] ? allUsers[0].username : 'لا يوجد'));
 
   const user = getCurrentUser();
   if (user) {
@@ -138,24 +122,16 @@ loginForm.addEventListener('submit', async (e) => {
   const username = document.getElementById('username').value.trim();
   const password = document.getElementById('password').value;
 
-  alert('تم الضغط على دخول. اسم المستخدم: "' + username + '"');
-
-  try {
-    const user = await login(username, password);
-    alert('نتيجة تسجيل الدخول: ' + JSON.stringify(user));
-
-    if (!user) {
-      loginError.textContent = 'اسم المستخدم أو كلمة المرور غير صحيحة';
-      loginError.hidden = false;
-      return;
-    }
-
-    setCurrentUser(user);
-    currentSection = 'dashboard';
-    showApp(user);
-  } catch (err) {
-    alert('صار خطأ: ' + err.message);
+  const user = await login(username, password);
+  if (!user) {
+    loginError.textContent = 'اسم المستخدم أو كلمة المرور غير صحيحة';
+    loginError.hidden = false;
+    return;
   }
+
+  setCurrentUser(user);
+  currentSection = 'dashboard';
+  showApp(user);
 });
 
 logoutBtn.addEventListener('click', async () => {
@@ -168,7 +144,6 @@ logoutBtn.addEventListener('click', async () => {
 
 document.addEventListener('DOMContentLoaded', init);
 
-// تسجيل Service Worker لدعم العمل بدون إنترنت (PWA)
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
     navigator.serviceWorker.register('./service-worker.js').catch((err) => {
